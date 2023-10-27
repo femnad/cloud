@@ -1,0 +1,9 @@
+init:
+	terraform init
+
+reconf:
+	terraform init -reconfigure
+
+upgrade:
+	terraform init -upgrade
+

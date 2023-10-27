@@ -1,0 +1,197 @@
+- hosts: localhost
+  name: Cleanup local known hosts
+  vars_files:
+    - secret.yml
+
+  tasks:
+    - name: Ensure SSH-ability
+      command:
+        cmd: pressh {{ mta_sts_hoster }}
+
+- hosts: mta-sts
+  become: true
+
+  vars:
+    caddy_version: 2.7.5
+    caddyfile: /etc/caddy/Caddyfile
+    cert_files:
+      - crt
+      - json
+      - key
+    cert_path: /caddy/.local/share/caddy/certificates/acme-v02.api.letsencrypt.org-directory/{{ mta_sts_hoster }}
+    cert_valid: '{{ saved_cert_valid | default(true) | bool }}'
+    services_dir: /etc/systemd/system
+
+  vars_files:
+    - secret.yml
+
+  handlers:
+    - name: restart-caddy
+      systemd:
+        name: caddy
+        state: restarted
+
+  tasks:
+    - name: Install packages
+      ansible.builtin.apt:
+        name:
+          - unattended-upgrades
+
+    - name: Update packages
+      ansible.builtin.apt:
+        name: '*'
+        state: latest
+        update_cache: true
+      async: 600
+      poll: 0
+      register: apt_update
+
+    - name: Enable unattended upgrades
+      ansible.builtin.copy:
+        src: unattended-upgrades.conf
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+
+    - name: Download Caddy
+      ansible.builtin.unarchive:
+        src: https://github.com/caddyserver/caddy/releases/download/v{{ caddy_version }}/caddy_{{ caddy_version }}_linux_amd64.tar.gz
+        dest: /usr/local/bin
+        remote_src: true
+        include: caddy
+
+    - name: Ensure Caddyfile dir
+      file:
+        path: '{{ caddyfile | dirname }}'
+        state: directory
+
+    - name: Write Caddyfile
+      template:
+        src: Caddyfile
+        dest: '{{ caddyfile }}'
+      notify: restart-caddy
+
+    - name: Template Caddy service
+      template:
+        src: service.j2
+        dest: /etc/systemd/system/caddy.service
+      vars:
+        description: Fast, multi-platform web server with automatic HTTPS
+        exec: /usr/local/bin/caddy run --config {{ caddyfile }}
+        env:
+          - HOME: /caddy
+
+    - name: Ensure cert directory (staging)
+      ansible.builtin.file:
+        path: '{{ cert_path }}'
+        state: directory
+      when: cert_valid
+
+    - name: Read cert files
+      ansible.builtin.slurp:
+        path: certs/cert.{{ item }}.sops
+      delegate_to: localhost
+      register: certs
+      loop: '{{ cert_files }}'
+      become: false
+      when: cert_valid
+
+    - name: Upload cert files
+      ansible.builtin.copy:
+        content: '{{ item.content | b64decode | community.sops.decrypt(output_type="binary", rstrip=false) }}'
+        dest: '{{ cert_path }}/{{ mta_sts_hoster }}.{{ item.item }}'
+      loop: '{{ certs.results }}'
+      when: cert_valid
+      no_log: true
+
+    - name: Start Caddy service
+      systemd:
+        name: caddy
+        state: started
+        daemon_reload: true
+        enabled: true
+
+    - name: Pause 20 seconds for fetching certificates
+      ansible.builtin.pause:
+        seconds: 20
+      when: not cert_valid
+
+    - name: Fetch certificates
+      ansible.builtin.fetch:
+        src: '{{ cert_path }}/{{ mta_sts_hoster }}.{{ item }}'
+        dest: certs/cert.{{ item }}
+        flat: yes
+      loop: '{{ cert_files }}'
+      when: not cert_valid
+
+    - name: Check apt update status
+      async_status:
+        jid: '{{ apt_update.ansible_job_id }}'
+      register: update_result
+      until: update_result.finished
+      retries: 60
+      delay: 5
+
+- hosts: localhost
+  vars:
+    cert_files:
+      - crt
+      - json
+      - key
+    cert_valid: '{{ saved_cert_valid | default(true) | bool }}'
+
+  vars_files:
+    - secret.yml
+
+  tasks:
+    - name: Encrypt cert files
+      community.sops.sops_encrypt:
+        age: '{{ age_public_key }}'
+        path: certs/cert.{{ item }}.sops
+        content_text: "{{ lookup('ansible.builtin.file', 'certs/cert.{{ item }}', rstrip=false) }}"
+      loop: '{{ cert_files }}'
+      when: not cert_valid
+
+    - name: Delete cert files
+      ansible.builtin.file:
+        path: certs/cert.{{ item }}
+        state: absent
+      loop: '{{ cert_files }}'
+      when: not cert_valid
+
+    - name: Check for cert changes
+      ansible.builtin.command:
+        cmd: git status -s
+      register: git_status
+      when: not cert_valid
+
+    - name: Check if there's a need for a new commit
+      set_fact:
+        needs_commit: '{{ git_status.stdout.strip() | length > 0 }}'
+      when: not cert_valid
+
+    - name: Git add new cert files
+      ansible.builtin.command:
+        cmd: git add certs/cert.{{ item }}.sops
+      with_items: '{{ cert_files }}'
+      when: not cert_valid and needs_commit
+
+    - name: Commit new cert files
+      ansible.builtin.command:
+        cmd: git commit -m 'add new certs'
+      when: not cert_valid and needs_commit
+
+    - name: Show changes
+      ansible.builtin.shell: |
+        git diff --shortstat HEAD~1..HEAD
+        git diff --name-only HEAD~1..HEAD
+      when: not cert_valid and needs_commit
+
+    - pause:
+        prompt: ^ Looks good?
+        seconds: 30
+      when: not cert_valid and needs_commit
+
+    - name: Push commit cert files
+      ansible.builtin.command:
+        cmd: git push
+      when: not cert_valid and needs_commit
+...
