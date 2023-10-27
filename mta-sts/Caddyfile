@@ -3,7 +3,7 @@
 	header Content-Type text/plain
 	respond /.well-known/mta-sts.txt 200 {
 		body `version: STSv1
-mode: testing
+mode: enforce
 max_age: 2419200
 {% for record in mx_records %}
 mx: {{ record }}
