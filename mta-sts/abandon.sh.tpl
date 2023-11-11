@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euEo pipefail
-eval $(gcloud secrets versions access ${secret_name} --secret ${secret_version})
+eval $(gcloud secrets versions access ${secret_version} --secret ${secret_name})
 
 curl -s --form-string "token=$TOKEN" \
   --form-string "user=$USER_KEY" \
