@@ -79,7 +79,7 @@
         env:
           - HOME: /caddy
 
-    - name: Ensure cert directory (staging)
+    - name: Ensure cert directory
       ansible.builtin.file:
         path: '{{ cert_path }}'
         state: directory
