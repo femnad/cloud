@@ -2,6 +2,10 @@ data "sops_file" "secrets" {
   source_file = "secrets.sops.yml"
 }
 
+locals {
+  dns_name = nonsensitive(data.sops_file.secrets.data["mta_sts_dns"])
+}
+
 provider "google" {
   project = nonsensitive(data.sops_file.secrets.data["project"])
   # Cheap spot instances?
@@ -41,7 +45,7 @@ module "instance" {
 module "dns-module" {
   source           = "femnad/dns-module/gcp"
   version          = "0.9.0"
-  dns_name         = nonsensitive(data.sops_file.secrets.data["mta_sts_dns"])
+  dns_name         = local.dns_name
   instance_ip_addr = module.instance.instance_ip_addr
   managed_zone     = nonsensitive(data.sops_file.secrets.data["dns_zone_name"])
   providers = {
