@@ -12,6 +12,7 @@
   become: true
 
   vars:
+    abandonship_version: 0.1.0
     caddy_version: 2.7.5
     caddyfile: /etc/caddy/Caddyfile
     cert_files:
@@ -121,6 +122,12 @@
         flat: yes
       loop: '{{ cert_files }}'
       when: not cert_valid
+
+    - name: Fetch abandonship binary
+      ansible.builtin.get_url:
+        url: https://github.com/femnad/abandonship/releases/download/v{{ abandonship_version }}/abandonship-v{{ abandonship_version }}-linux-x86_64
+        dest: /usr/local/bin/abandonship
+        mode: 0755
 
     - name: Check apt update status
       async_status:
