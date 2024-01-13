@@ -23,7 +23,7 @@ resource "local_file" "shutdown-script" {
   filename        = var.shutdown_script
   file_permission = "0644"
   content = templatefile("${var.shutdown_script}.tpl", {
-    secret_name    = nonsensitive(data.sops_file.secrets.data["pushover_secret.name"])
+    secret_name    = nonsensitive(data.sops_file.secrets.data["pushover_secret"])
   })
 }
 
