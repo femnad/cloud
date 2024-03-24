@@ -19,5 +19,9 @@ terraform {
       source  = "carlpett/sops"
       version = "1.0.0"
     }
+    uptimerobot = {
+      source  = "femnad/uptimerobot"
+      version = "0.1.1"
+    }
   }
 }

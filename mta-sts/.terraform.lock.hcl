@@ -16,6 +16,29 @@ provider "registry.terraform.io/carlpett/sops" {
   ]
 }
 
+provider "registry.terraform.io/femnad/uptimerobot" {
+  version     = "0.1.1"
+  constraints = "0.1.1"
+  hashes = [
+    "h1:pH8qmY/lSE5oWsSpgEbYhcqCVXX9SBhQkQTlCUEJMhI=",
+    "zh:008251ef0a706dffaeb8ee40c0bddef0b42e229d4d4ada83334a69ecca4f23eb",
+    "zh:036acdf930ff010d1453a409ebb592f78e31ebb7425d22d603e91d768d7bc1e9",
+    "zh:1e63454f8d0d95609fd258885ad00ef2a3eae33bbc68b64d86db1b7eea4f3140",
+    "zh:735b9daf95941ebcef68bbe340edebf5d119d3bcba3171abbf315f9fa4eb1e07",
+    "zh:77738755cf4273638bfdc622c50fb906f057cbb51c8a1bddc92e0334cd27f7ed",
+    "zh:85f5aff942c3acf0eb333234c5ee05ea6dc636002ff791e2ed22c54bd6590085",
+    "zh:890df766e9b839623b1f0437355032a3c006226a6c200cd911e15ee1a9014e9f",
+    "zh:a6cd7282e41ab09686453034de70dd62c97326c04f077da2b9f6740dcb4915c5",
+    "zh:a717318e754f490db7cf58c83c24c6eb36f890b498b639b17101145fa7cc1f40",
+    "zh:a89bc837ef7541d3a1a88f8f0f34940fb673e222c2fbd82a06edc00f1c298610",
+    "zh:b0fce661280ee4f2c2068f541d6fa954b1d9823271b28765ccbeb5dc1674d5e2",
+    "zh:d208ebc0093f21999654e22490fb5eef860f1a6dbee8d423cd954b0854dc6768",
+    "zh:d50b0558a299421b78e10c1324a438e981c4ce94e19b4ff61343739e19b706de",
+    "zh:dcf5172589a21155bcc3625a1bcadccf908c1766d7fd942e565802403b7fe1c2",
+    "zh:e7f8dabae3e4bc7ba33081ebe9dde9fc9eae1531214a26fb24bff2c7e3d14983",
+  ]
+}
+
 provider "registry.terraform.io/hashicorp/google" {
   version     = "5.21.0"
   constraints = ">= 4.75.1, >= 5.2.0"
