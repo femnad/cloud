@@ -11,5 +11,4 @@ apply:
     terraform apply -auto-approve
 
 provision:
-    terraform apply -auto-approve
     gtr up
