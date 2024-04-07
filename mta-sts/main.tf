@@ -7,6 +7,10 @@ terraform {
   required_version = ">= 0.13"
 
   required_providers {
+    checkly = {
+      source  = "checkly/checkly"
+      version = "1.7.6"
+    }
     google = {
       source  = "hashicorp/google"
       version = ">= 4.75.1"
@@ -18,10 +22,6 @@ terraform {
     sops = {
       source  = "carlpett/sops"
       version = "1.0.0"
-    }
-    uptimerobot = {
-      source  = "femnad/uptimerobot"
-      version = "0.1.2"
     }
   }
 }
