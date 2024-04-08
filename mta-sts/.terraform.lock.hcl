@@ -38,29 +38,6 @@ provider "registry.terraform.io/checkly/checkly" {
   ]
 }
 
-provider "registry.terraform.io/femnad/uptimerobot" {
-  version     = "0.1.2"
-  constraints = "0.1.2"
-  hashes = [
-    "h1:TcoWlu+ZONPs7IWpQBZ6IDOvOYHAhVFimhRkOCdkpXI=",
-    "zh:0236e594debdc9f5a0abe10310478ff3b6fda07c8fa9bcdc6de4475e58b814fc",
-    "zh:14cc47dac1c0bf77fb2638447a946a2577a50192176adff9ee08fe91c4d06c38",
-    "zh:4a2e9e0bf32d030aef72956613b2024aa40a6cba0f78db861a973bcee09997d4",
-    "zh:64719a53580c8c1f3850bcc98cb44a53a46817725e0861cc6884d08aae0adf55",
-    "zh:64806df4418c2e39d66366ed7e618ffeeaa912335e36ab0a54b5c2d2d9874b54",
-    "zh:73a7cf91a1a77b2b58ddb8f554deff9be5cc3a4756764613fe11f6df8ddec22e",
-    "zh:7d86e028b7e68e3973fb5d2aaa9bf029e21d0a5f72645592e767cdefbd07869f",
-    "zh:890df766e9b839623b1f0437355032a3c006226a6c200cd911e15ee1a9014e9f",
-    "zh:8c4abe56c308135bb04cb1bfb0b9106ea54d8122881e61dfd3c346c347a9d7cc",
-    "zh:b11eadbb1acf0ff4f0688fb2cc78a32c33f9fdd7ed52d45f6e68de728cd979e9",
-    "zh:bc6212fb9f3af65db7a01ada695078173c66e1d02e4e1066de06ab2a8fa8f2fa",
-    "zh:cf8e19c4aeddb5b643b92318d170d09d84fa6abbf149a4b6f75c50ee2c78fdf5",
-    "zh:eebdaaa298f5c98e48045e37a04deb303579b296644a8af801a64501d29c024f",
-    "zh:f39750b142597d097de92488edd054f04aed372cced0fbd21412d123aa04798b",
-    "zh:fe002cb951b5e69a5eee1f4df0dee1482774b027e714124d50467000a78cd453",
-  ]
-}
-
 provider "registry.terraform.io/hashicorp/google" {
   version     = "5.23.0"
   constraints = ">= 4.75.1, >= 5.2.0"
