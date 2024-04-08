@@ -47,4 +47,14 @@ resource "checkly_check" "mta-sts" {
       target     = "200"
     }
   }
+
+  alert_channel_subscription {
+    channel_id = checkly_alert_channel.email_main.id
+    activated  = true
+  }
+
+  alert_channel_subscription {
+    channel_id = checkly_alert_channel.email_push.id
+    activated  = true
+  }
 }
