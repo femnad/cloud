@@ -129,3 +129,16 @@ resource "google_dns_record_set" "mta-sts-txt" {
     prevent_destroy = true
   }
 }
+
+resource "google_dns_record_set" "fly_cname" {
+  managed_zone = local.dns_zone
+  name         = nonsensitive(data.sops_file.secrets.data["mta_sts_name"])
+  project      = local.project
+  rrdatas      = [nonsensitive(data.sops_file.secrets.data["mta_sts_cname"])]
+  ttl          = 3600
+  type         = "CNAME"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}

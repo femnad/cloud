@@ -6,6 +6,10 @@ provider "checkly" {
   account_id = var.checkly_account_id
 }
 
+locals {
+  mta_sts_host = nonsensitive(data.sops_file.secrets.data["mta_sts_host"])
+}
+
 resource "checkly_alert_channel" "email_main" {
   email {
     address = data.sops_file.secrets.data["checkly_main_email"]
@@ -36,11 +40,11 @@ resource "checkly_check" "mta-sts" {
   use_global_alert_settings = true
 
   locations = [
-    "us-west-1"
+    "eu-west-2"
   ]
 
   request {
-    url = "https://${trimsuffix(local.dns_name, ".")}/.well-known/mta-sts.txt"
+    url = "https://${local.mta_sts_host}/.well-known/mta-sts.txt"
     assertion {
       source     = "STATUS_CODE"
       comparison = "EQUALS"
