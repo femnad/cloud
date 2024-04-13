@@ -34,6 +34,7 @@ resource "google_compute_disk" "muzak_disk" {
   name = nonsensitive(data.sops_file.secrets.data["muzak_volume_name"])
   size = 10
   type = "pd-standard"
+  zone = "us-west4-b"
 
   lifecycle {
     prevent_destroy = true
