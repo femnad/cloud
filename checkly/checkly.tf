@@ -36,7 +36,7 @@ resource "checkly_check" "mta-sts" {
   name                      = "mta-sts"
   type                      = "API"
   activated                 = true
-  frequency                 = 5
+  frequency                 = 10
   use_global_alert_settings = true
 
   locations = [
